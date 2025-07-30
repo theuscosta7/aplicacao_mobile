@@ -1,47 +1,39 @@
 package com.example.projetomobile
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.projetomobile.ui.theme.ProjetoMobileTheme
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var notificationHelper: Notification
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ProjetoMobileTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+        // Inicializa o helper de notificações
+        notificationHelper = Notification(this)
+
+        // Botões de notificação
+        val notification1 = findViewById<Button>(R.id.Notification1)
+        val notification2 = findViewById<Button>(R.id.Notification2)
+
+        // Clique no botão de notificação básica
+        notification1.setOnClickListener {
+            notificationHelper.showBasicNotification(
+                title = "Notificação Básica",
+                content = "Este é um exemplo de notificação simples."
+            )
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjetoMobileTheme {
-        Greeting("Android")
+        // Clique no botão de notificação avançada
+        notification2.setOnClickListener {
+            notificationHelper.showAdvancedNotification(
+                title = "Notificação Avançada",
+                content = "Este é um exemplo com ações.",
+                imageUrl = "" // Ainda não está usando imagem
+            )
+        }
     }
 }
