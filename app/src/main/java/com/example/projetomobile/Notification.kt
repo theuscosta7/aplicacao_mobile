@@ -39,14 +39,12 @@ class Notification(private val context: Context) {
     }
 
     fun showBasicNotification(title: String, content: String) {
-        // Verificar permissão para Android 13 (Mesmas verificações ocorrem para Notificações avançadas)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // Se não tiver permissão, solicitar permissão
                 if (context is android.app.Activity) {
                     ActivityCompat.requestPermissions(
                         context,
