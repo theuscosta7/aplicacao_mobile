@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var notificationHelper: Notification
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var biometricPrompt: BiometricPrompt
+    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         val notification2 = findViewById<Button>(R.id.Notification2)
         val cameraButton = findViewById<Button>(R.id.CameraPermission)
         val locationButton = findViewById<Button>(R.id.LocationPermission)
+        val autenticationButton = findViewById<Button>(R.id.btnBiometricAuth)
 
         notification1.setOnClickListener {
             notificationHelper.showBasicNotification(
@@ -64,6 +69,36 @@ class MainActivity : AppCompatActivity() {
                 getCurrentLocation()
             }
         }
+
+        // Autenticação
+        val executor = ContextCompat.getMainExecutor(this)
+        biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    val intent = Intent(this@MainActivity, Authentication::class.java)
+                    startActivity(intent)
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    showToast("Autenticação falhou.")
+                }
+            })
+
+        promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Teste de Autenticação")
+            .setSubtitle("Localize o sensor.")
+            .setNegativeButtonText("Cancelar")
+            .build()
+
+        autenticationButton.setOnClickListener {
+            biometricPrompt.authenticate(promptInfo)
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun checkAndRequestPermission(permission: String, tipo: String, onGranted: () -> Unit) {
